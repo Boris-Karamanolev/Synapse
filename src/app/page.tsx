@@ -1,27 +1,60 @@
 "use client";
 
-import { useState } from "react";
-import { Terminal } from "lucide-react";
-import { Button } from "@heroui/react";
+import { useEffect, useState } from "react";
+import Device from "@/modules/components/Device";
+import { DeviceInfo } from "@/types/gobal";
+import loadDevice from "@/lib/load-device";
+import { Spinner } from "@heroui/react";
+import Modes from "@/modules/components/Modes";
+import Brightness from "@/modules/components/Brightness";
 
 export default function Home() {
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState<DeviceInfo | null>(null);
 
-  async function run() {
-    // @ts-ignore
-    const result = await window.electronAPI.runCommand(["--info"]);
-    setOutput(result);
+  useEffect(() => {
+    async function fetchDeviceInfo() {
+      try {
+        const deviceInfo = await loadDevice();
+        setOutput(deviceInfo);
+      } catch (error) {
+        console.error("Error loading device info:", error);
+      }
+    }
+
+    fetchDeviceInfo();
+  }, []);
+
+  if (!output) {
+    return (
+      <main className="flex items-center justify-center min-h-screen">
+        <Spinner color="success" />
+      </main>
+    );
   }
 
   return (
-    <main className="p-10 space-y-4">
-      <h1 className="text-2xl font-bold flex gap-2 items-center">
-        <Terminal className="w-5 h-5" /> Razer CLI
-      </h1>
+    <main className="space-y-4">
+      <Device name={output?.Device.name} />
 
-      <Button onClick={run}>Get Info</Button>
+      <section className="page-section">
+        <div>
+          <h2>Performance Modes</h2>
 
-      <pre className="bg-gray-800 text-white p-4 rounded">{output}</pre>
+          <p className="text-sm text-gray-300">Current Mode: {output.Performance}</p>
+        </div>
+
+        <Modes />
+      </section>
+
+      <section className="page-section">
+        <h2>Keyboard Brightness</h2>
+
+        <Brightness defaultValue={output["kbd-backlight"]} />
+      </section>
+
+      <pre className="border-1 text-gray-200 p-4 overflow-auto">
+        {JSON.stringify(output, null, 2)}
+      </pre>
     </main>
   );
 }

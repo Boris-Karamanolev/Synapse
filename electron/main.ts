@@ -15,7 +15,9 @@ function createWindow() {
     },
   });
 
-  const url = isDev ? "http://localhost:3000" : `file://${path.join(__dirname, "../out/index.html")}`;
+  const url = isDev
+    ? "http://localhost:3000"
+    : `file://${path.join(__dirname, "../out/index.html")}`;
 
   win.loadURL(url);
 }
@@ -28,10 +30,16 @@ app.on("window-all-closed", () => {
 
 ipcMain.handle("run-command", async (_event, args: string[]) => {
   return new Promise((resolve, reject) => {
-    const binaryPath = path.join(__dirname, "..", "razer-cli.exe"); // adjust for your binary
+    const binaryPath = path.join(__dirname, "..", "razer-cli.exe");
     execFile(binaryPath, ["auto", ...args], (error, stdout, stderr) => {
-      if (error) reject(stderr);
-      else resolve(stdout);
+      if (error) {
+        console.log(error);
+        console.error("Error executing command:", stderr);
+        reject(stderr);
+      } else {
+        // console.log("Command output:", stdout);
+        resolve(stdout);
+      }
     });
   });
 });
