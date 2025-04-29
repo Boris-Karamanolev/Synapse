@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Device from "@/modules/components/Device";
 import { DeviceInfo } from "@/types/gobal";
 import loadDevice from "@/lib/load-device";
 import { Spinner } from "@heroui/react";
 import Modes from "@/modules/components/Modes";
 import Brightness from "@/modules/components/Brightness";
+import { CircleGauge, Cpu, Fan } from "lucide-react";
 
 export default function Home() {
   const [output, setOutput] = useState<DeviceInfo | null>(null);
@@ -34,15 +34,26 @@ export default function Home() {
 
   return (
     <main className="space-y-4">
-      <Device name={output?.Device.name} />
-
       <section className="page-section">
-        <div>
-          <h2>Performance Modes</h2>
+        <div className="w-full flex justify-between gap-4">
+          <p className="flex gap-2 items-center text-sm font-bold">
+            <CircleGauge size={14} />
+            <span>Mode: {output.Performance.replace(/[_()]/g, " ").split(",")[0]}</span>
+          </p>
 
-          <p className="text-sm text-gray-300">Current Mode: {output.Performance}</p>
+          <div>
+            <p>
+              <Cpu size={14} />
+              <span>{output.CPU}</span>
+            </p>
+            <p className="flex gap-2 items-center text-sm">
+              <Fan size={14} />
+              <span className="text-sm font-bold">
+                {output.Performance.replace(/[_()]/g, " ").split(",")[1]}
+              </span>
+            </p>
+          </div>
         </div>
-
         <Modes />
       </section>
 

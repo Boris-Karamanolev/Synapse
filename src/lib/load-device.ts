@@ -1,5 +1,5 @@
 import { DeviceInfo } from "@/types/gobal";
-import command from "./electron";
+import command, { getCPUInfo } from "./electron";
 function toJsonFromRustStruct(input: string): string | null {
   try {
     const match = input.match(/^[A-Z][a-zA-Z0-9_]*\s*(\{[\s\S]*\})$/);
@@ -59,6 +59,8 @@ export default async function loadDevice() {
   if (json["kbd-backlight"] !== undefined) {
     json["kbd-backlight"] = Math.round((json["kbd-backlight"] / 255) * 100);
   }
+
+  json.CPU = await getCPUInfo();
 
   return json;
 }

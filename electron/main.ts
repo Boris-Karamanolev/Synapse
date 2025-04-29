@@ -1,14 +1,29 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { execFile } from "child_process";
+import { screen } from "electron";
 
 const isDev = !app.isPackaged;
 let win: BrowserWindow | null = null;
 
 function createWindow() {
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width, height } = primaryDisplay.workAreaSize;
+
   win = new BrowserWindow({
-    width: 1000,
-    height: 700,
+    width: 400,
+    height: 600, // Adjusted height to match the G-Helper style
+    x: width - 405, // Position the window at the right bottom corner
+    y: height - 605, // Adjusted position to match the new height
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    alwaysOnTop: true,
+    autoHideMenuBar: true,
+    backgroundColor: "#000000",
+    title: "Razer Helper",
+    backgroundMaterial: "none",
+    movable: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
@@ -37,7 +52,6 @@ ipcMain.handle("run-command", async (_event, args: string[]) => {
         console.error("Error executing command:", stderr);
         reject(stderr);
       } else {
-        // console.log("Command output:", stdout);
         resolve(stdout);
       }
     });

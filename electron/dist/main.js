@@ -6,12 +6,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const child_process_1 = require("child_process");
+const electron_2 = require("electron");
 const isDev = !electron_1.app.isPackaged;
 let win = null;
 function createWindow() {
+    const primaryDisplay = electron_2.screen.getPrimaryDisplay();
+    const { width, height } = primaryDisplay.workAreaSize;
     win = new electron_1.BrowserWindow({
-        width: 1000,
-        height: 700,
+        width: 400,
+        height: 600, // Adjusted height to match the G-Helper style
+        x: width - 405, // Position the window at the right bottom corner
+        y: height - 605, // Adjusted position to match the new height
+        resizable: false,
+        minimizable: false,
+        maximizable: false,
+        alwaysOnTop: true,
+        autoHideMenuBar: true,
+        backgroundColor: "#000000",
+        title: "Razer Helper",
+        backgroundMaterial: "none",
+        movable: false,
         webPreferences: {
             preload: path_1.default.join(__dirname, "preload.js"),
             contextIsolation: true,
@@ -37,7 +51,6 @@ electron_1.ipcMain.handle("run-command", async (_event, args) => {
                 reject(stderr);
             }
             else {
-                // console.log("Command output:", stdout);
                 resolve(stdout);
             }
         });

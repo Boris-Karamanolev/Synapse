@@ -10,4 +10,5 @@ export type DeviceInfo = {
   "kbd-backlight": number;
   Fan: "Auto" | "Manual";
   Performance: "(Balanced, Auto)" | "(Silent, Auto)" | string;
+  CPU: string;
 };
